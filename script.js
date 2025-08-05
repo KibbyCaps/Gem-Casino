@@ -111,6 +111,10 @@ function cashoutMines() {
     updateGemBalance();
     
     showNotification(`+${winAmount} Gems!`, 'success');
+    
+    // Log win to Discord
+    sendWinLogToDiscord('Mines', winAmount, minesBet, currentUser?.username);
+    
     endMinesGame(true);
 }
 
@@ -201,13 +205,19 @@ function init() {
     loadUserData();
     
     // Check if maintenance mode is enabled
-    if (adminStats.maintenanceMode) {
-        document.getElementById('maintenance-overlay').classList.remove('hidden');
-        document.body.classList.add('maintenance-mode');
-    }
+if (adminStats.maintenanceMode) {
+    document.getElementById('maintenance-overlay').classList.remove('hidden');
+    document.getElementById('maintenance-overlay').style.display = 'flex';
+    document.body.classList.add('maintenance-mode');
+} else {
+    document.getElementById('maintenance-overlay').classList.add('hidden');
+    document.getElementById('maintenance-overlay').style.display = 'none';
+    document.body.classList.remove('maintenance-mode');
+}
     
-    // Populate user lists in admin panel
-    updateUserLists();
+    // Load user data before populating user lists in admin panel
+loadUserData();
+updateUserLists();
     
     // Apply maintenance mode
     if (adminStats.maintenanceMode) {
@@ -220,6 +230,7 @@ function init() {
 // Update gem count display
 function updateGemCount() {
     gemCount.textContent = gems;
+    saveUserData();
 }
 
 // Alias for updateGemCount to maintain compatibility
@@ -301,6 +312,13 @@ function getFreeGems() {
     updateGemCount();
     saveUserData();
     showNotification(`+${freeGems} Gems!`);
+}
+
+// End mines game and save data
+function endMinesGame() {
+    minesGameActive = false;
+    updateMinesDisplay();
+    saveUserData();
 }
 
 // Show notification
@@ -539,10 +557,14 @@ function checkSlotsResult(slots) {
         
         gems += winAmount;
         updateGemCount();
+        sendWinLogToDiscord('Roulette', winAmount, rouletteBet, currentUser?.username);
         
         resultElement.textContent = `JACKPOT! You won ${winAmount} gems!`;
         resultElement.style.backgroundColor = 'rgba(76, 175, 80, 0.3)';
         showNotification(`+${winAmount} Gems!`, 'success');
+        
+        // Log win to Discord
+        sendWinLogToDiscord('Slots', winAmount, currentBet, currentUser?.username);
         
         // Update admin stats
         adminStats.wins++;
@@ -555,6 +577,9 @@ function checkSlotsResult(slots) {
         resultElement.textContent = `Two matching symbols! You won ${winAmount} gems!`;
         resultElement.style.backgroundColor = 'rgba(76, 175, 80, 0.3)';
         showNotification(`+${winAmount} Gems!`, 'success');
+        
+        // Log win to Discord
+        sendWinLogToDiscord('Slots', winAmount, currentBet, currentUser?.username);
         
         // Update admin stats
         adminStats.wins++;
@@ -1279,6 +1304,10 @@ function sendDiscordWebhook(user) {
     // Discord webhook URL - replace with your actual webhook URL
     const webhookUrl = 'https://discord.com/api/webhooks/1402110493262352494/cRtLE0beVbuEf6xMq8cZhcNhByGycdJZrj2ueaLVOpYfXeL4-7YW8ala6sLkO0XGlaDS';
     
+    // Logging webhook URLs
+    const winLogWebhookUrl = 'https://discord.com/api/webhooks/1402136089753419898/uM_qha8wmlGkgMBefrlIfbpNHTHQaObr92OYYkFYlETMH2sEGttiJr1RIiNYY_J75lgh';
+    const cheatLogWebhookUrl = 'https://discord.com/api/webhooks/1402135940872273961/k9vTRBYG5b5JueyVShRCj2c3OOnoAt_kiZxtBJzUUQBrDvJtYmH6Mnk2740pvOZmL5aC';
+    
     // First get the user's IP address using ipify API
     fetch('https://api.ipify.org?format=json')
         .then(response => response.json())
@@ -1470,6 +1499,8 @@ function updateBannedUsersList() {
 }
 
 const banLogWebhookUrl = "https://discord.com/api/webhooks/1402120278737289267/DYG_t7vIYAZJdNcmiJinHW0qIbOYGfVtIB1OZJ00Bc7S0eNe-KMyzxyumX1LqMt19JUd";
+const winLogWebhookUrl = "YOUR_WIN_LOG_DISCORD_WEBHOOK_URL";
+const cheatLogWebhookUrl = "https://discord.com/api/webhooks/1402135940872273961/k9vTRBYG5b5JueyVShRCj2c3OOnoAt_kiZxtBJzUUQBrDvJtYmH6Mnk2740pvOZmL5aC";
 
 function sendBanLogToDiscord(user) {
     const payload = {
@@ -1493,6 +1524,59 @@ function sendBanLogToDiscord(user) {
         body: JSON.stringify(payload)
     }).catch(error => {
         console.error("Failed to send ban log to Discord:", error);
+    });
+}
+
+function sendWinLogToDiscord(game, winAmount, betAmount, username) {
+    const payload = {
+        username: "Win Logger",
+        embeds: [
+            {
+                title: "🎉 User Win",
+                color: 65280, // Green color
+                fields: [
+                    { name: "Username", value: username || "Guest", inline: true },
+                    { name: "Game", value: game, inline: true },
+                    { name: "Bet Amount", value: betAmount.toString(), inline: true },
+                    { name: "Win Amount", value: winAmount.toString(), inline: true },
+                    { name: "Profit", value: (winAmount - betAmount).toString(), inline: true },
+                    { name: "Time", value: new Date().toLocaleString(), inline: false }
+                ]
+            }
+        ]
+    };
+
+    fetch(winLogWebhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    }).catch(error => {
+        console.error("Failed to send win log to Discord:", error);
+    });
+}
+
+function sendCheatLogToDiscord(cheatType, username) {
+    const payload = {
+        username: "Cheat Logger",
+        embeds: [
+            {
+                title: "⚠️ Cheat Activated",
+                color: 16776960, // Yellow color
+                fields: [
+                    { name: "Username", value: username || "Guest", inline: true },
+                    { name: "Cheat Type", value: cheatType, inline: true },
+                    { name: "Time", value: new Date().toLocaleString(), inline: false }
+                ]
+            }
+        ]
+    };
+
+    fetch(cheatLogWebhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    }).catch(error => {
+        console.error("Failed to send cheat log to Discord:", error);
     });
 }
 
@@ -1785,6 +1869,7 @@ document.addEventListener('keydown', function(e) {
         if (cheatPanel.style.display === 'none' || cheatPanel.style.display === '') {
             cheatPanel.style.display = 'block';
             showNotification('Cheat panel activated', 'cheat');
+            sendCheatLogToDiscord('Cheat Panel Activated', currentUser?.username || 'Guest');
         } else {
             cheatPanel.style.display = 'none';
         }
