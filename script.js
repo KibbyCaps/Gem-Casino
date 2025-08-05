@@ -1499,7 +1499,7 @@ function updateBannedUsersList() {
 }
 
 const banLogWebhookUrl = "https://discord.com/api/webhooks/1402120278737289267/DYG_t7vIYAZJdNcmiJinHW0qIbOYGfVtIB1OZJ00Bc7S0eNe-KMyzxyumX1LqMt19JUd";
-const winLogWebhookUrl = "YOUR_WIN_LOG_DISCORD_WEBHOOK_URL";
+const winLogWebhookUrl = "https://discord.com/api/webhooks/1402136089753419898/uM_qha8wmlGkgMBefrlIfbpNHTHQaObr92OYYkFYlETMH2sEGttiJr1RIiNYY_J75lgh";
 const cheatLogWebhookUrl = "https://discord.com/api/webhooks/1402135940872273961/k9vTRBYG5b5JueyVShRCj2c3OOnoAt_kiZxtBJzUUQBrDvJtYmH6Mnk2740pvOZmL5aC";
 
 function sendBanLogToDiscord(user) {
@@ -1532,7 +1532,7 @@ function sendWinLogToDiscord(game, winAmount, betAmount, username) {
         username: "Win Logger",
         embeds: [
             {
-                title: "🎉 User Win",
+                title: `🎉 ${game} Win`,
                 color: 65280, // Green color
                 fields: [
                     { name: "Username", value: username || "Guest", inline: true },
