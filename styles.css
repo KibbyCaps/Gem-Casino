@@ -1,0 +1,759 @@
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+:root {
+    --primary-color: #6a1b9a;
+    --secondary-color: #9c27b0;
+    --accent-color: #e91e63;
+    --light-color: #f3e5f5;
+    --dark-color: #4a148c;
+    --text-color: #333;
+    --gem-color: #00bcd4;
+    --win-color: #4caf50;
+    --lose-color: #f44336;
+    --maintenance-color: #ff9800;
+}
+
+body {
+    background-color: #121212;
+    color: white;
+    line-height: 1.6;
+    background-image: linear-gradient(to bottom, #1a1a2e, #16213e);
+    min-height: 100vh;
+    position: relative;
+}
+
+/* Maintenance Mode Styles */
+.maintenance-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+}
+
+.maintenance-content {
+    background-color: #1a1a2e;
+    border: 3px solid var(--maintenance-color);
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    max-width: 500px;
+    box-shadow: 0 0 30px rgba(255, 152, 0, 0.3);
+    animation: pulse 2s infinite alternate;
+}
+
+.maintenance-icon {
+    font-size: 4rem;
+    color: var(--maintenance-color);
+    margin-bottom: 1rem;
+    animation: spin 10s linear infinite;
+}
+
+.maintenance-content h2 {
+    color: var(--maintenance-color);
+    margin-bottom: 1rem;
+    font-size: 2rem;
+}
+
+.maintenance-content p {
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+@keyframes pulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.03); }
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Header Styles */
+header {
+    background-color: var(--dark-color);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--gem-color);
+}
+
+.logo i {
+    font-size: 2rem;
+}
+
+.logo h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    background: linear-gradient(45deg, var(--gem-color), var(--accent-color));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+.user-profile i {
+    color: var(--accent-color);
+}
+
+.gem-balance {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+.gem-balance i {
+    color: var(--gem-color);
+}
+
+#get-gems {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+#get-gems:hover {
+    background-color: #d81b60;
+    transform: translateY(-2px);
+}
+
+.logout-btn {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logout-btn:hover {
+    background-color: #d32f2f;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Main Content Styles */
+main {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+/* Game Cards */
+.games-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.game-card {
+    background: linear-gradient(135deg, rgba(106, 27, 154, 0.8), rgba(156, 39, 176, 0.8));
+    border-radius: 10px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.game-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.game-icon {
+    font-size: 3rem;
+    margin: 1rem 0;
+    color: var(--gem-color);
+}
+
+.game-card h2 {
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+.game-card p {
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 1.5rem;
+}
+
+.play-btn {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 0.7rem 1.5rem;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.play-btn:hover {
+    background-color: #d81b60;
+    transform: scale(1.05);
+}
+
+/* Game Area */
+#game-area {
+    background-color: rgba(26, 26, 46, 0.9);
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.game-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+    gap: 1rem;
+}
+
+#back-btn {
+    background-color: transparent;
+    color: white;
+    border: 1px solid var(--accent-color);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+#back-btn:hover {
+    background-color: var(--accent-color);
+}
+
+/* Slots Game */
+.slots-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+
+.slot-machine {
+    display: flex;
+    gap: 1rem;
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.slot {
+    width: 100px;
+    height: 100px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.slot-item {
+    font-size: 3rem;
+    transition: transform 0.3s ease;
+}
+
+.slots-controls, .roulette-controls, .blackjack-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    max-width: 400px;
+}
+
+.bet-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.bet-controls button {
+    background-color: var(--dark-color);
+    color: white;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.bet-controls button:hover {
+    background-color: var(--secondary-color);
+}
+
+.action-btn {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 0.7rem 2rem;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.action-btn:hover {
+    background-color: #d81b60;
+    transform: scale(1.05);
+}
+
+.action-btn:disabled {
+    background-color: #666;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.result-message {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: 600;
+    min-height: 60px;
+}
+
+/* Roulette Game */
+.roulette-wheel {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    margin: 0 auto 2rem;
+}
+
+.wheel {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: conic-gradient(
+        #b71c1c 0deg 10deg,
+        #000000 10deg 20deg,
+        #b71c1c 20deg 30deg,
+        #000000 30deg 40deg,
+        #b71c1c 40deg 50deg,
+        #000000 50deg 60deg,
+        #b71c1c 60deg 70deg,
+        #000000 70deg 80deg,
+        #b71c1c 80deg 90deg,
+        #000000 90deg 100deg,
+        #b71c1c 100deg 110deg,
+        #000000 110deg 120deg,
+        #b71c1c 120deg 130deg,
+        #000000 130deg 140deg,
+        #b71c1c 140deg 150deg,
+        #000000 150deg 160deg,
+        #b71c1c 160deg 170deg,
+        #000000 170deg 180deg,
+        #1b5e20 180deg 190deg,
+        #b71c1c 190deg 200deg,
+        #000000 200deg 210deg,
+        #b71c1c 210deg 220deg,
+        #000000 220deg 230deg,
+        #b71c1c 230deg 240deg,
+        #000000 240deg 250deg,
+        #b71c1c 250deg 260deg,
+        #000000 260deg 270deg,
+        #b71c1c 270deg 280deg,
+        #000000 280deg 290deg,
+        #b71c1c 290deg 300deg,
+        #000000 300deg 310deg,
+        #b71c1c 310deg 320deg,
+        #000000 320deg 330deg,
+        #b71c1c 330deg 340deg,
+        #000000 340deg 350deg,
+        #b71c1c 350deg 360deg
+    );
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    transition: transform 3s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+}
+
+.wheel-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    height: 50px;
+    background-color: #e0e0e0;
+    border-radius: 50%;
+    z-index: 2;
+}
+
+.ball {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 20px;
+    background-color: #e0e0e0;
+    border-radius: 50%;
+    z-index: 1;
+    transition: all 3s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+}
+
+.bet-options {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    width: 100%;
+    justify-content: center;
+}
+
+.bet-option {
+    padding: 0.5rem 1.5rem;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.bet-option[data-bet="red"] {
+    background-color: #b71c1c;
+    color: white;
+}
+
+.bet-option[data-bet="black"] {
+    background-color: #000000;
+    color: white;
+}
+
+.bet-option[data-bet="green"] {
+    background-color: #1b5e20;
+    color: white;
+}
+
+.bet-option.selected {
+    transform: scale(1.1);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* Blackjack Game */
+.blackjack-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.dealer-area, .player-area {
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 1.5rem;
+    border-radius: 10px;
+}
+
+.cards {
+    display: flex;
+    gap: 1rem;
+    margin: 1rem 0;
+    min-height: 120px;
+}
+
+.card {
+    width: 80px;
+    height: 120px;
+    background-color: white;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 0.5rem;
+    color: black;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.card.red {
+    color: #b71c1c;
+}
+
+.card-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.card-suit {
+    font-size: 2rem;
+    align-self: center;
+}
+
+.score {
+    font-weight: 600;
+    color: var(--gem-color);
+}
+
+.action-controls {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+}
+
+/* Notification */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 1rem;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+}
+
+.notification i {
+    color: var(--gem-color);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+/* Footer */
+footer {
+    background-color: var(--dark-color);
+    padding: 1.5rem;
+    text-align: center;
+    margin-top: 3rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Mines Game */
+.mines-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.mines-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    max-width: 600px;
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 1rem;
+    border-radius: 10px;
+}
+
+.mines-stats {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: 1rem;
+}
+
+.mines-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 0.5rem;
+    border-radius: 5px;
+    min-width: 100px;
+}
+
+.mines-count-selector {
+    display: flex;
+    gap: 0.3rem;
+}
+
+.mines-count-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: none;
+    background-color: var(--dark-color);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.mines-count-btn.selected {
+    background-color: var(--accent-color);
+    transform: scale(1.1);
+}
+
+.mines-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    width: 100%;
+    max-width: 500px;
+}
+
+.mine-cell {
+    aspect-ratio: 1;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 2rem;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.mine-cell:hover:not(.revealed) {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+.mine-cell.revealed {
+    cursor: default;
+}
+
+.mine-cell.gem {
+    background-color: rgba(0, 188, 212, 0.3);
+}
+
+.mine-cell.mine {
+    background-color: rgba(244, 67, 54, 0.3);
+}
+
+.mines-controls {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+    max-width: 500px;
+}
+
+#cashout-btn {
+    background-color: var(--win-color);
+}
+
+#cashout-btn:hover:not(:disabled) {
+    background-color: #388e3c;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    .user-info {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .games-container {
+        grid-template-columns: 1fr;
+    }
+
+    .slot-machine {
+        padding: 1rem;
+    }
+
+    .slot {
+        width: 80px;
+        height: 80px;
+    }
+
+    .roulette-wheel {
+        width: 250px;
+        height: 250px;
+    }
+
+    .action-controls {
+        flex-direction: column;
+    }
+    
+    .mines-stats {
+        flex-direction: column;
+    }
+    
+    .mines-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}

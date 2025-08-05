@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gem Gambling - Virtual Casino</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Add login/signup page styles -->
+    <style>
+        /* Login/Signup Styles */
+        #login-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            padding: 20px;
+        }
+        
+        .auth-box {
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            border: 1px solid rgba(66, 133, 244, 0.3);
+        }
+        
+        .auth-logo {
+            margin-bottom: 20px;
+            color: var(--gem-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .auth-logo i {
+            font-size: 2.5rem;
+        }
+        
+        .auth-logo h1 {
+            font-size: 2rem;
+            background: linear-gradient(45deg, var(--gem-color), var(--accent-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .auth-tab {
+            flex: 1;
+            padding: 10px;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.3s ease;
+        }
+        
+        .auth-tab.active {
+            color: white;
+            border-bottom: 2px solid var(--accent-color);
+        }
+        
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .auth-form input {
+            padding: 12px 15px;
+            border-radius: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .auth-form input:focus {
+            border-color: var(--accent-color);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(233, 30, 99, 0.2);
+        }
+        
+        .auth-form button {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .auth-form button:hover {
+            background: #d81b60;
+            transform: translateY(-2px);
+        }
+        
+        .auth-form .form-footer {
+            margin-top: 15px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .auth-form .form-footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+        
+        .auth-form .form-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .auth-error {
+            background: rgba(244, 67, 54, 0.1);
+            color: #f44336;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        
+        /* Hide the main content when not logged in */
+        .hidden-auth {
+            display: none;
+        }
+    </style>
+    <style>
+         /* Cheat Panel Styles */
+         #cheat-panel {
+             display: none;
+             position: fixed;
+             top: 50px;
+             right: 20px;
+             background: rgba(0, 0, 0, 0.9);
+             border: 2px solid #ff9800;
+             border-radius: 10px;
+             padding: 15px;
+             z-index: 1000;
+             color: white;
+             width: 250px;
+             box-shadow: 0 0 20px rgba(255, 152, 0, 0.5);
+         }
+         #cheat-panel h3 {
+             color: #ff9800;
+             margin-top: 0;
+             border-bottom: 1px solid #ff9800;
+             padding-bottom: 5px;
+             display: flex;
+             align-items: center;
+             gap: 8px;
+         }
+         #cheat-panel h4 {
+             color: #ff9800;
+             margin: 15px 0 5px;
+             font-size: 14px;
+         }
+         .cheat-option {
+             margin: 10px 0;
+             padding: 8px;
+             background: rgba(255, 255, 255, 0.05);
+             border-radius: 5px;
+         }
+         .cheat-btn {
+             background: #ff9800;
+             color: black;
+             border: none;
+             padding: 5px 10px;
+             border-radius: 5px;
+             cursor: pointer;
+             margin-top: 5px;
+             transition: all 0.2s ease;
+             font-weight: bold;
+         }
+         .cheat-btn:hover {
+             background: #ff5722;
+             transform: scale(1.05);
+         }
+         .cheat-btn.active {
+             background: #4caf50;
+             color: white;
+         }
+         #cheat-panel input[type="checkbox"] {
+             accent-color: #ff9800;
+             margin-left: 5px;
+         }
+         #force-roulette-color {
+             width: 100%;
+             padding: 5px;
+             background: #333;
+             color: white;
+             border: 1px solid #ff9800;
+             border-radius: 5px;
+             margin-top: 5px;
+         }
+         
+         /* Admin Panel Styles */
+         #admin-panel {
+             display: none;
+             position: fixed;
+             top: 50px;
+             left: 20px;
+             background: rgba(0, 0, 0, 0.9);
+             border: 2px solid #4285f4;
+             border-radius: 10px;
+             padding: 15px;
+             z-index: 1000;
+             color: white;
+             width: 280px;
+             max-height: 80vh;
+             overflow-y: auto;
+             box-shadow: 0 0 20px rgba(66, 133, 244, 0.5);
+             font-family: 'Arial', sans-serif;
+         }
+         
+         /* Scrollbar styles for admin panel */
+         #admin-panel::-webkit-scrollbar {
+             width: 8px;
+         }
+         
+         #admin-panel::-webkit-scrollbar-track {
+             background: rgba(0, 0, 0, 0.3);
+             border-radius: 4px;
+         }
+         
+         #admin-panel::-webkit-scrollbar-thumb {
+             background: #4285f4;
+             border-radius: 4px;
+         }
+         
+         #admin-panel::-webkit-scrollbar-thumb:hover {
+             background: #1a73e8;
+         }
+         #admin-panel h3 {
+             color: #4285f4;
+             margin-top: 0;
+             border-bottom: 1px solid #4285f4;
+             padding-bottom: 5px;
+             display: flex;
+             align-items: center;
+             gap: 8px;
+             font-size: 18px;
+         }
+         #admin-panel h4 {
+             color: #4285f4;
+             margin: 15px 0 5px;
+             font-size: 14px;
+             border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+         }
+         .admin-option {
+             margin: 10px 0;
+             padding: 8px;
+             background: rgba(255, 255, 255, 0.05);
+             border-radius: 5px;
+             display: flex;
+             flex-direction: column;
+         }
+         .admin-btn {
+             background: #4285f4;
+             color: white;
+             border: none;
+             padding: 5px 10px;
+             border-radius: 5px;
+             cursor: pointer;
+             margin-top: 5px;
+             transition: all 0.2s ease;
+             font-weight: bold;
+         }
+         .admin-btn:hover {
+             background: #1a73e8;
+             transform: scale(1.05);
+             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+         }
+         .admin-btn.active {
+             background: #34a853;
+             color: white;
+         }
+         #admin-panel input[type="checkbox"] {
+             accent-color: #4285f4;
+             margin-left: 5px;
+         }
+         #admin-panel input[type="number"] {
+             width: 80px;
+             padding: 5px;
+             background: #333;
+             color: white;
+             border: 1px solid #4285f4;
+             border-radius: 5px;
+             margin-top: 5px;
+         }
+         .admin-input {
+             width: 100%;
+             padding: 5px;
+             background: #333;
+             color: white;
+             border: 1px solid #4285f4;
+             border-radius: 5px;
+             margin-top: 5px;
+         }
+         .admin-stats {
+             display: grid;
+             grid-template-columns: 1fr 1fr;
+             gap: 10px;
+             margin-top: 10px;
+         }
+         .stat-card {
+             background: rgba(255, 255, 255, 0.05);
+             padding: 8px;
+             border-radius: 5px;
+             text-align: center;
+             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+             border: 1px solid rgba(66, 133, 244, 0.3);
+         }
+         .stat-value {
+             font-size: 18px;
+             font-weight: bold;
+             color: #4285f4;
+         }
+         .stat-label {
+             font-size: 12px;
+             opacity: 0.7;
+         }
+         #reveal-cheats {
+             background-color: #ea4335;
+             width: 100%;
+             margin-top: 10px;
+         }
+         #reveal-cheats:hover {
+             background-color: #d33426;
+         }
+     </style>
+</head>
+<body>
+    <!-- Login/Signup Container -->
+    <div id="login-container">
+        <div class="auth-box">
+            <div class="auth-logo">
+                <i class="fas fa-gem"></i>
+                <h1>Gem Gambling</h1>
+            </div>
+            
+            <div class="auth-tabs">
+                <div class="auth-tab active" data-tab="login">Login</div>
+                <div class="auth-tab" data-tab="signup">Sign Up</div>
+            </div>
+            
+            <div class="auth-error" id="auth-error"></div>
+            
+            <!-- Login Form -->
+            <form class="auth-form" id="login-form">
+                <input type="text" placeholder="Username" id="login-username" required>
+                <input type="password" placeholder="Password" id="login-password" required>
+                <button type="submit">Login</button>
+                <div class="form-footer">
+                    Don't have an account? <a href="#" class="switch-form" data-form="signup">Sign up</a>
+                </div>
+            </form>
+            
+            <!-- Signup Form -->
+            <form class="auth-form" id="signup-form" style="display: none;">
+                <input type="email" placeholder="Email" id="signup-email" required>
+                <input type="text" placeholder="Username" id="signup-username" required>
+                <input type="password" placeholder="Password" id="signup-password" required>
+                <input type="password" placeholder="Confirm Password" id="signup-confirm-password" required>
+                <button type="submit">Sign Up</button>
+                <div class="form-footer">
+                    Already have an account? <a href="#" class="switch-form" data-form="login">Login</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Main Content (Hidden until logged in) -->
+    <div id="main-content" class="hidden-auth">
+    <header>
+        <div class="logo">
+            <i class="fas fa-gem"></i>
+            <h1>Gem Casino</h1>
+        </div>
+        <div class="user-info">
+            <div class="user-profile">
+                <i class="fas fa-user"></i>
+                <span id="username">User</span>
+            </div>
+            <div class="gem-balance">
+                <i class="fas fa-gem"></i>
+                <span id="gem-count">1000</span> Gems
+            </div>
+            <button id="get-gems">Get Free Gems</button>
+            <button id="logout-button" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+    </header>
+
+    <main>
+        <section class="games-container">
+            <div class="game-card" id="slots-card">
+                <h2>Lucky Slots</h2>
+                <div class="game-icon">
+                    <i class="fas fa-dice"></i>
+                </div>
+                <p>Spin to win big! Match symbols and multiply your gems.</p>
+                <button class="play-btn" data-game="slots">Play Now</button>
+            </div>
+
+            <div class="game-card" id="roulette-card">
+                <h2>Gem Roulette</h2>
+                <div class="game-icon">
+                    <i class="fas fa-circle-notch"></i>
+                </div>
+                <p>Place your bets and watch the wheel spin!</p>
+                <button class="play-btn" data-game="roulette">Play Now</button>
+            </div>
+
+            <div class="game-card" id="blackjack-card">
+                <h2>Blackjack</h2>
+                <div class="game-icon">
+                    <i class="fas fa-cards"></i>
+                </div>
+                <p>Beat the dealer to 21 without going over.</p>
+                <button class="play-btn" data-game="blackjack">Play Now</button>
+            </div>
+
+            <div class="game-card" id="mines-card">
+                <h2>Gem Mines</h2>
+                <div class="game-icon">
+                    <i class="fas fa-bomb"></i>
+                </div>
+                <p>Uncover gems without hitting the mines!</p>
+                <button class="play-btn" data-game="mines">Play Now</button>
+            </div>
+        </section>
+
+        <section id="game-area" class="hidden">
+            <div class="game-header">
+                <button id="back-btn"><i class="fas fa-arrow-left"></i> Back to Games</button>
+                <h2 id="current-game-title">Game Title</h2>
+            </div>
+            
+            <div id="slots-game" class="game-content hidden">
+                <div class="slots-container">
+                    <div class="slot-machine">
+                        <div class="slot" id="slot1"><div class="slot-item">🍒</div></div>
+                        <div class="slot" id="slot2"><div class="slot-item">🍋</div></div>
+                        <div class="slot" id="slot3"><div class="slot-item">🍇</div></div>
+                    </div>
+                    <div class="slots-controls">
+                        <div class="bet-controls">
+                            <button id="decrease-bet">-</button>
+                            <span id="current-bet">10</span> Gems
+                            <button id="increase-bet">+</button>
+                        </div>
+                        <button id="spin-btn" class="action-btn">Spin</button>
+                    </div>
+                    <div id="slots-result" class="result-message"></div>
+                </div>
+            </div>
+
+            <div id="roulette-game" class="game-content hidden">
+                <div class="roulette-container">
+                    <div class="roulette-wheel">
+                        <div class="wheel" id="wheel">
+                            <div class="wheel-center"></div>
+                        </div>
+                        <div class="ball" id="ball"></div>
+                    </div>
+                    <div class="roulette-controls">
+                        <div class="bet-options">
+                            <button class="bet-option" data-bet="red">Red</button>
+                            <button class="bet-option" data-bet="black">Black</button>
+                            <button class="bet-option" data-bet="green">Green</button>
+                        </div>
+                        <div class="bet-controls">
+                            <button id="roulette-decrease-bet">-</button>
+                            <span id="roulette-current-bet">10</span> Gems
+                            <button id="roulette-increase-bet">+</button>
+                        </div>
+                        <button id="spin-wheel-btn" class="action-btn">Spin Wheel</button>
+                    </div>
+                    <div id="roulette-result" class="result-message"></div>
+                </div>
+            </div>
+
+            <div id="blackjack-game" class="game-content hidden">
+                <div class="blackjack-container">
+                    <div class="dealer-area">
+                        <h3>Dealer's Hand</h3>
+                        <div id="dealer-cards" class="cards"></div>
+                        <div id="dealer-score" class="score">Score: 0</div>
+                    </div>
+                    <div class="player-area">
+                        <h3>Your Hand</h3>
+                        <div id="player-cards" class="cards"></div>
+                        <div id="player-score" class="score">Score: 0</div>
+                    </div>
+                    <div class="blackjack-controls">
+                        <div class="bet-controls">
+                            <button id="blackjack-decrease-bet">-</button>
+                            <span id="blackjack-current-bet">10</span> Gems
+                            <button id="blackjack-increase-bet">+</button>
+                        </div>
+                        <div class="action-controls">
+                            <button id="deal-btn" class="action-btn">Deal</button>
+                            <button id="hit-btn" class="action-btn" disabled>Hit</button>
+                            <button id="stand-btn" class="action-btn" disabled>Stand</button>
+                        </div>
+                    </div>
+                    <div id="blackjack-result" class="result-message"></div>
+                </div>
+            </div>
+
+            <div id="mines-game" class="game-content hidden">
+                <div class="mines-container">
+                    <div class="mines-info">
+                        <div class="mines-stats">
+                            <div class="mines-stat">
+                                <span>Mines:</span>
+                                <div class="mines-count-selector">
+                    <button class="mines-count-btn" data-mines="3">3</button>
+                    <button class="mines-count-btn" data-mines="5">5</button>
+                    <button class="mines-count-btn selected" data-mines="7">7</button>
+                    <button class="mines-count-btn" data-mines="15">15</button>
+                </div>
+                            </div>
+                            <div class="mines-stat">
+                                <span>Gems Found:</span>
+                                <span id="gems-found">0</span>
+                            </div>
+                            <div class="mines-stat">
+                                <span>Multiplier:</span>
+                                <span id="current-multiplier">1.00x</span>
+                            </div>
+                        </div>
+                        <div class="bet-controls" data-game="mines">
+                            <button id="mines-decrease-bet" class="decrease-btn" data-game="mines">-</button>
+                            <span id="mines-current-bet">50</span> Gems
+                            <button id="mines-increase-bet" class="increase-btn" data-game="mines">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="mines-grid" id="mines-grid">
+                        <!-- Grid will be generated by JavaScript -->
+                    </div>
+                    
+                    <div class="mines-controls">
+                        <button id="start-mines-btn" class="action-btn">Start Game</button>
+                        <button id="cashout-btn" class="action-btn" disabled>Cash Out</button>
+                    </div>
+                    
+                    <div id="mines-result" class="result-message"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Gem Casino - Virtual gambling with no real money involved. Play responsibly!</p>
+        <p>All games are for entertainment purposes only. No real currency can be won or lost.</p>
+    </footer>
+
+    <div id="gem-notification" class="notification hidden">
+        <i class="fas fa-gem"></i>
+        <span id="gem-notification-text"></span>
+    </div>
+    
+    <!-- Maintenance Mode Overlay -->
+    <div id="maintenance-overlay" class="maintenance-overlay hidden">
+        <div class="maintenance-content">
+            <i class="fas fa-tools maintenance-icon"></i>
+            <h2>Site Under Maintenance</h2>
+            <p>We're currently performing some updates to make your gambling experience even better!</p>
+            <p>Please check back soon.</p>
+        </div>
+    </div>
+    
+    <!-- Secret Cheat Panel (Hidden by Default) -->
+    <div id="cheat-panel">
+        <h3><i class="fas fa-user-secret"></i> Secret Cheats</h3>
+        <p style="font-size: 12px; color: #ff9800; margin-top: -5px;">Press Ctrl+Alt+C to toggle</p>
+        
+        <h4>General</h4>
+        <div class="cheat-option">
+            <label for="infinite-gems">Infinite Gems</label>
+            <input type="checkbox" id="infinite-gems">
+            <button class="cheat-btn" id="add-gems-btn">Add 10000 Gems</button>
+        </div>
+        
+        <!-- Mines Game Cheats -->
+        <div class="cheat-option">
+            <h4>Mines Game</h4>
+            <label for="mines-esp">Mine ESP</label>
+            <input type="checkbox" id="mines-esp">
+            <button class="cheat-btn" id="auto-win-mines">Auto Win</button>
+        </div>
+        
+        <!-- Slots Cheats -->
+        <div class="cheat-option">
+            <h4>Slots Game</h4>
+            <button class="cheat-btn" id="force-jackpot">Force Jackpot</button>
+        </div>
+        
+        <!-- Roulette Cheats -->
+        <div class="cheat-option">
+            <h4>Roulette Game</h4>
+            <select id="force-roulette-color">
+                <option value="">Select Result</option>
+                <option value="red">Force Red</option>
+                <option value="black">Force Black</option>
+                <option value="green">Force Green</option>
+            </select>
+        </div>
+        
+        <!-- Blackjack Cheats -->
+        <div class="cheat-option">
+            <h4>Blackjack Game</h4>
+            <button class="cheat-btn" id="see-dealer-card">See Dealer Card</button>
+            <button class="cheat-btn" id="force-dealer-bust">Force Dealer Bust</button>
+        </div>
+    </div>
+    
+    <!-- Admin Panel (Hidden by Default) -->
+    <div id="admin-panel">
+        <h3><i class="fas fa-shield-alt"></i> Admin Panel</h3>
+        <p style="font-size: 12px; color: #4285f4; margin-top: -5px;">Press Ctrl+Alt+Shift to toggle</p>
+        
+        <div class="admin-stats">
+            <div class="stat-card">
+                <div class="stat-value" id="total-players">1</div>
+                <div class="stat-label">Players</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="total-gems">1000</div>
+                <div class="stat-label">Total Gems</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="games-played">0</div>
+                <div class="stat-label">Games Played</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="win-rate">0%</div>
+                <div class="stat-label">Win Rate</div>
+            </div>
+        </div>
+        
+        <h4>Game Settings</h4>
+        <div class="admin-option">
+            <label for="house-edge">House Edge (%)</label>
+            <input type="number" id="house-edge" class="admin-input" min="0" max="50" value="5">
+            <button class="admin-btn" id="apply-house-edge">Apply</button>
+        </div>
+        
+        <div class="admin-option">
+            <label for="max-bet">Max Bet</label>
+            <input type="number" id="max-bet" class="admin-input" min="100" value="1000">
+            <button class="admin-btn" id="apply-max-bet">Apply</button>
+        </div>
+        
+        <h4>Player Management</h4>
+        <div class="admin-option">
+            <label for="set-gems">Set Player Gems</label>
+            <input type="number" id="set-gems" class="admin-input" min="0" value="1000">
+            <button class="admin-btn" id="apply-gems">Apply</button>
+        </div>
+        
+        <div class="admin-option">
+            <label for="reset-stats">Reset Statistics</label>
+            <button class="admin-btn" id="reset-stats">Reset All Stats</button>
+        </div>
+        
+        <h4>User Management</h4>
+        <div class="admin-option">
+            <label for="user-search">Search User</label>
+            <input type="text" id="user-search" placeholder="Enter username">
+            <button class="admin-btn" id="search-user">Search</button>
+        </div>
+        
+        <div class="admin-option" id="user-details" style="display: none;">
+            <h5 id="user-details-name">Username</h5>
+            <p>Email: <span id="user-details-email">user@example.com</span></p>
+            <p>Status: <span id="user-details-status">Active</span></p>
+            <div>
+                <button class="admin-btn" id="ban-user">Ban User</button>
+                <button class="admin-btn" id="unban-user" style="display: none;">Unban User</button>
+            </div>
+        </div>
+        
+        <div class="admin-option">
+            <label>All Users</label>
+            <select id="all-users-list" size="3" style="width: 100%; background: #333; color: white; border: 1px solid #4285f4;">
+                <!-- All users will be populated here -->
+            </select>
+            <button class="admin-btn" id="refresh-users" style="margin-top: 5px;">Refresh List</button>
+        </div>
+        
+        <div class="admin-option">
+            <label>Banned Users</label>
+            <select id="banned-users-list" size="3" style="width: 100%; background: #333; color: white; border: 1px solid #4285f4;">
+                <!-- Banned users will be populated here -->
+            </select>
+        </div>
+        
+        <h4>Game Controls</h4>
+        <div class="admin-option">
+            <label for="maintenance-mode">Maintenance Mode</label>
+            <input type="checkbox" id="maintenance-mode">
+        </div>
+        
+        <div class="admin-option">
+            <label for="debug-mode">Debug Mode</label>
+            <input type="checkbox" id="debug-mode">
+        </div>
+        
+        <div class="admin-option">
+            <button class="admin-btn" id="reveal-cheats">Reveal Cheat Panel</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    </div> <!-- End of main-content -->
+</body>
+</html>
