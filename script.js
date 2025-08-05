@@ -144,6 +144,9 @@ function endMinesGame(won) {
     if (document.getElementById('admin-panel').style.display === 'block') {
         updateAdminStats();
     }
+    
+    // Save user data
+    saveUserData();
 }
 
 // User and authentication state
@@ -194,6 +197,9 @@ function init() {
     // Initialize bet limits based on max bet
     updateBetLimits();
     
+    // Load saved data first
+    loadUserData();
+    
     // Check if maintenance mode is enabled
     if (adminStats.maintenanceMode) {
         document.getElementById('maintenance-overlay').classList.remove('hidden');
@@ -202,6 +208,13 @@ function init() {
     
     // Populate user lists in admin panel
     updateUserLists();
+    
+    // Apply maintenance mode
+    if (adminStats.maintenanceMode) {
+        document.getElementById('maintenance-overlay').style.display = 'flex';
+    } else {
+        document.getElementById('maintenance-overlay').style.display = 'none';
+    }
 }
 
 // Update gem count display
@@ -212,6 +225,7 @@ function updateGemCount() {
 // Alias for updateGemCount to maintain compatibility
 function updateGemBalance() {
     updateGemCount();
+    saveUserData();
 }
 
 // Setup event listeners
@@ -285,6 +299,7 @@ function getFreeGems() {
     const freeGems = Math.floor(Math.random() * 100) + 50;
     gems += freeGems;
     updateGemCount();
+    saveUserData();
     showNotification(`+${freeGems} Gems!`);
 }
 
@@ -1023,6 +1038,55 @@ function updateAdminStats() {
     document.getElementById('set-gems').value = gems;
     document.getElementById('maintenance-mode').checked = adminStats.maintenanceMode;
     document.getElementById('debug-mode').checked = adminStats.debugMode;
+    
+    // Save admin stats
+    localStorage.setItem('adminStats', JSON.stringify(adminStats));
+    
+    // Apply maintenance mode
+    if (adminStats.maintenanceMode) {
+        document.getElementById('maintenance-overlay').style.display = 'flex';
+    } else {
+        document.getElementById('maintenance-overlay').style.display = 'none';
+    }
+    
+    // Ensure all users are loaded
+    updateUserLists();
+}
+
+// Save user data to localStorage
+function saveUserData() {
+    if (currentUser) {
+        // Update current user
+        currentUser.gems = gems;
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        
+        // Update user in users array
+        const userIndex = users.findIndex(u => u.username === currentUser.username);
+        if (userIndex !== -1) {
+            users[userIndex].gems = gems;
+            localStorage.setItem('users', JSON.stringify(users));
+        }
+    }
+    
+    // Save admin stats
+    localStorage.setItem('adminStats', JSON.stringify(adminStats));
+}
+
+// Load saved data
+function loadUserData() {
+    const savedAdminStats = localStorage.getItem('adminStats');
+    if (savedAdminStats) {
+        const stats = JSON.parse(savedAdminStats);
+        adminStats = { ...adminStats, ...stats };
+    }
+    
+    // Load users and banned users
+    users = JSON.parse(localStorage.getItem('users')) || [];
+    bannedUsers = JSON.parse(localStorage.getItem('bannedUsers')) || [];
+    
+    // Update admin stats
+    adminStats.totalPlayers = users.length;
+    adminStats.totalGems = users.reduce((total, user) => total + (user.gems || 0), 0);
 }
 
 // Authentication functions
@@ -1180,7 +1244,7 @@ function setupAuthEventListeners() {
         
         // Update admin stats
         adminStats.totalPlayers = users.length;
-        adminStats.totalGems += newUser.gems;
+        adminStats.totalGems = users.reduce((total, user) => total + (user.gems || 0), 0);
         updateAdminStats();
         
         showNotification(`Welcome, ${newUser.username}!`);
