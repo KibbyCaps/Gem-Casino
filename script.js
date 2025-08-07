@@ -685,7 +685,7 @@ function spinRouletteWheel() {
 }
 
 // Check roulette result
-function checkRouletteResult(position) {
+async function checkRouletteResult(position) {
     const resultElement = document.getElementById('roulette-result');
     let result;
     
@@ -749,7 +749,7 @@ function checkRouletteResult(position) {
     
     // Update admin panel stats if it's open
     if (document.getElementById('admin-panel').style.display === 'block') {
-        updateAdminStats();
+        await updateAdminStats();
     }
 }
 
