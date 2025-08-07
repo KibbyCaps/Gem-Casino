@@ -146,7 +146,7 @@ function endMinesGame(won) {
     
     // Update admin panel stats if it's open
     if (document.getElementById('admin-panel').style.display === 'block') {
-        updateAdminStats();
+updateAdminStats();
     }
     
     // Save user data
@@ -155,8 +155,25 @@ function endMinesGame(won) {
 
 // User and authentication state
 let currentUser = null;
-let users = JSON.parse(localStorage.getItem('users')) || [];
-let bannedUsers = JSON.parse(localStorage.getItem('bannedUsers')) || [];
+let users = [];
+let bannedUsers = [];
+
+// Function to load users and banned users
+async function loadUsersData() {
+    try {
+        users = await fetch('/api/users').then(response => response.json());
+    } catch (error) {
+        console.error('Error loading users:', error);
+        users = JSON.parse(localStorage.getItem('users')) || [];
+    }
+    
+    try {
+        bannedUsers = await fetch('/api/bannedUsers').then(response => response.json());
+    } catch (error) {
+        console.error('Error loading banned users:', error);
+        bannedUsers = JSON.parse(localStorage.getItem('bannedUsers')) || [];
+    }
+}
 
 // Game state
 let gems = 1000;
@@ -173,14 +190,18 @@ let revealedCells = 0;
 let currentMultiplier = 1.0;
 
 // Initialize the game
-function init() {
+async function init() {
+    // Load users data first
+    await loadUsersData();
+    
     // Check if user is logged in
-    checkAuthentication();
+    await checkAuthentication();
     
     // Setup authentication event listeners
     setupAuthEventListeners();
     
-    updateGemCount();
+    await updateGemCount();
+    await saveUserData();
     setupEventListeners();
     
     // Initialize mines count buttons
@@ -202,7 +223,7 @@ function init() {
     updateBetLimits();
     
     // Load saved data first
-    loadUserData();
+loadUserData();
     
     // Check if maintenance mode is enabled
 if (adminStats.maintenanceMode) {
@@ -243,6 +264,14 @@ function updateGemBalance() {
 function setupEventListeners() {
     // Get free gems button
     getGemsBtn.addEventListener('click', getFreeGems);
+
+    // Leaderboard button
+        const leaderboardBtn = document.getElementById('leaderboard-btn');
+        if (leaderboardBtn) {
+            leaderboardBtn.addEventListener('click', () => {
+                window.location.href = 'leaderboard.html';
+            });
+        }
 
     // Logout button
     document.getElementById('logout-button').addEventListener('click', function() {
@@ -539,7 +568,7 @@ function spinSlots() {
 }
 
 // Check slots result
-function checkSlotsResult(slots) {
+async function checkSlotsResult(slots) {
     const values = slots.map(slot => slot.textContent);
     const resultElement = document.getElementById('slots-result');
     
@@ -594,7 +623,7 @@ function checkSlotsResult(slots) {
     
     // Update admin panel stats if it's open
     if (document.getElementById('admin-panel').style.display === 'block') {
-        updateAdminStats();
+        await updateAdminStats();
     }
 }
 
@@ -1046,7 +1075,7 @@ let adminStats = {
 };
 
 // Update admin panel stats display
-function updateAdminStats() {
+async function updateAdminStats() {
     document.getElementById('total-players').textContent = adminStats.totalPlayers;
     document.getElementById('total-gems').textContent = adminStats.totalGems;
     document.getElementById('games-played').textContent = adminStats.gamesPlayed;
@@ -1064,8 +1093,17 @@ function updateAdminStats() {
     document.getElementById('maintenance-mode').checked = adminStats.maintenanceMode;
     document.getElementById('debug-mode').checked = adminStats.debugMode;
     
-    // Save admin stats
-    localStorage.setItem('adminStats', JSON.stringify(adminStats));
+    // Save admin stats to server and localStorage as fallback
+    try {
+        await fetch('/api/adminStats', { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' }, 
+            body: JSON.stringify(adminStats) 
+        });
+    } catch (error) {
+        console.error('Error saving admin stats to server:', error);
+        localStorage.setItem('adminStats', JSON.stringify(adminStats));
+    }
     
     // Apply maintenance mode
     if (adminStats.maintenanceMode) {
@@ -1078,8 +1116,8 @@ function updateAdminStats() {
     updateUserLists();
 }
 
-// Save user data to localStorage
-function saveUserData() {
+// Save user data to server and localStorage as fallback
+async function saveUserData() {
     if (currentUser) {
         // Update current user
         currentUser.gems = gems;
@@ -1089,25 +1127,57 @@ function saveUserData() {
         const userIndex = users.findIndex(u => u.username === currentUser.username);
         if (userIndex !== -1) {
             users[userIndex].gems = gems;
-            localStorage.setItem('users', JSON.stringify(users));
+            
+            // Try to save to server first
+            try {
+                await fetch('/api/users', { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify(users) 
+                });
+            } catch (error) {
+                console.error('Error saving users to server:', error);
+                // Fallback to localStorage
+                localStorage.setItem('users', JSON.stringify(users));
+            }
         }
     }
     
     // Save admin stats
-    localStorage.setItem('adminStats', JSON.stringify(adminStats));
+    try {
+        await fetch('/api/adminStats', { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' }, 
+            body: JSON.stringify(adminStats) 
+        });
+    } catch (error) {
+        console.error('Error saving admin stats to server:', error);
+        // Fallback to localStorage
+        localStorage.setItem('adminStats', JSON.stringify(adminStats));
+    }
 }
 
 // Load saved data
-function loadUserData() {
-    const savedAdminStats = localStorage.getItem('adminStats');
-    if (savedAdminStats) {
-        const stats = JSON.parse(savedAdminStats);
-        adminStats = { ...adminStats, ...stats };
+async function loadUserData() {
+    // Try to load admin stats from server first
+    try {
+        const response = await fetch('/api/adminStats');
+        if (response.ok) {
+            const stats = await response.json();
+            adminStats = { ...adminStats, ...stats };
+        }
+    } catch (error) {
+        console.error('Error loading admin stats from server:', error);
+        // Fallback to localStorage
+        const savedAdminStats = localStorage.getItem('adminStats');
+        if (savedAdminStats) {
+            const stats = JSON.parse(savedAdminStats);
+            adminStats = { ...adminStats, ...stats };
+        }
     }
     
-    // Load users and banned users
-    users = JSON.parse(localStorage.getItem('users')) || [];
-    bannedUsers = JSON.parse(localStorage.getItem('bannedUsers')) || [];
+    // Load users and banned users (already handled by loadUsersData)
+    await loadUsersData();
     
     // Update admin stats
     adminStats.totalPlayers = users.length;
@@ -1115,7 +1185,7 @@ function loadUserData() {
 }
 
 // Authentication functions
-function checkAuthentication() {
+async function checkAuthentication() {
     // Check if user is logged in
     const savedUser = localStorage.getItem('currentUser');
     if (savedUser) {
@@ -1135,12 +1205,12 @@ function checkAuthentication() {
         // Update user info
         document.getElementById('username').textContent = currentUser.username;
         gems = currentUser.gems || 1000;
-        updateGemCount();
+        await updateGemCount();
         
         // Update admin stats
         adminStats.totalPlayers = users.length;
         adminStats.totalGems = users.reduce((total, user) => total + (user.gems || 0), 0);
-        updateAdminStats();
+        await updateAdminStats();
     } else {
         // Show login form
         document.getElementById('login-container').style.display = 'flex';
@@ -1179,11 +1249,14 @@ function setupAuthEventListeners() {
     });
     
     // Login form submission
-    document.getElementById('login-form').addEventListener('submit', (e) => {
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         
         const username = document.getElementById('login-username').value;
         const password = document.getElementById('login-password').value;
+        
+        // Make sure users are loaded
+        await loadUsersData();
         
         // Find user
         const user = users.find(u => u.username === username && u.password === password);
@@ -1206,7 +1279,7 @@ function setupAuthEventListeners() {
             // Update user info
             document.getElementById('username').textContent = user.username;
             gems = user.gems || 1000;
-            updateGemCount();
+            await updateGemCount();
             
             showNotification(`Welcome back, ${user.username}!`);
         } else {
@@ -1215,7 +1288,7 @@ function setupAuthEventListeners() {
     });
     
     // Signup form submission
-    document.getElementById('signup-form').addEventListener('submit', (e) => {
+    document.getElementById('signup-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         
         const email = document.getElementById('signup-email').value;
@@ -1228,6 +1301,9 @@ function setupAuthEventListeners() {
             showAuthError('Passwords do not match');
             return;
         }
+        
+        // Make sure users are loaded
+        await loadUsersData();
         
         // Check if username already exists
         if (users.some(u => u.username === username)) {
@@ -1252,7 +1328,18 @@ function setupAuthEventListeners() {
         
         // Add to users array
         users.push(newUser);
-        localStorage.setItem('users', JSON.stringify(users));
+        
+        // Save to server and localStorage
+        try {
+            await fetch('/api/users', { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' }, 
+                body: JSON.stringify(users) 
+            });
+        } catch (error) {
+            console.error('Error saving new user to server:', error);
+            localStorage.setItem('users', JSON.stringify(users));
+        }
         
         // Login as new user
         currentUser = newUser;
@@ -1265,12 +1352,12 @@ function setupAuthEventListeners() {
         // Update user info
         document.getElementById('username').textContent = newUser.username;
         gems = newUser.gems;
-        updateGemCount();
+        await updateGemCount();
         
         // Update admin stats
         adminStats.totalPlayers = users.length;
         adminStats.totalGems = users.reduce((total, user) => total + (user.gems || 0), 0);
-        updateAdminStats();
+        await updateAdminStats();
         
         showNotification(`Welcome, ${newUser.username}!`);
         
@@ -1597,7 +1684,7 @@ function banUser(username) {
     
     // Add to banned users
     bannedUsers.push(user);
-    localStorage.setItem('bannedUsers', JSON.stringify(bannedUsers));
+    fetch('/api/bannedUsers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(bannedUsers) });
     
     // Update user lists
     updateUserLists();

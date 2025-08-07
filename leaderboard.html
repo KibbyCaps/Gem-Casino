@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gem Casino - Leaderboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            background-image: linear-gradient(to bottom, #1a1a2e, #16213e);
+            min-height: 100vh;
+        }
+        
+        .leaderboard-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            background-color: rgba(26, 26, 46, 0.9);
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .leaderboard-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            gap: 1rem;
+        }
+        
+        .back-to-casino {
+            background-color: transparent;
+            color: white;
+            border: 1px solid var(--accent-color);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .back-to-casino:hover {
+            background-color: var(--accent-color);
+        }
+        
+        .leaderboard-title {
+            color: var(--gem-color);
+            font-size: 2em;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .leaderboard-title i {
+            color: gold;
+        }
+        
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        .leaderboard-table th, .leaderboard-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .leaderboard-table th {
+            background-color: rgba(0, 0, 0, 0.3);
+            color: var(--gem-color);
+            font-weight: 600;
+        }
+        
+        .leaderboard-table tr:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        .leaderboard-table tr:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .rank {
+            font-weight: bold;
+            color: gold;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        
+        .rank-1 {
+            color: gold;
+        }
+        
+        .rank-2 {
+            color: silver;
+        }
+        
+        .rank-3 {
+            color: #cd7f32; /* bronze */
+        }
+        
+        .username {
+            font-weight: 600;
+            color: white;
+        }
+        
+        .gems {
+            color: var(--gem-color);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="leaderboard-container">
+        <div class="leaderboard-header">
+            <button id="back-to-casino" class="back-to-casino"><i class="fas fa-arrow-left"></i> Back to Casino</button>
+            <h1 class="leaderboard-title"><i class="fas fa-trophy"></i> Top Players</h1>
+        </div>
+        
+        <table class="leaderboard-table">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Username</th>
+                    <th>Gems</th>
+                </tr>
+            </thead>
+            <tbody id="leaderboard-data">
+                <!-- Data will be populated dynamically -->
+            </tbody>
+        </table>
+    </div>
+    
+    <script>
+        // Back button navigation
+        document.getElementById('back-to-casino').addEventListener('click', () => {
+            window.location.href = 'Index.html';
+        });
+
+        // Populate leaderboard with users sorted by gems (top 20)
+        const leaderboardBody = document.getElementById('leaderboard-data');
+        // Replace localStorage usage with a fetch call to retrieve leaderboard data from the server
+        fetch('/api/leaderboard')
+            .then(response => response.json())
+            .then(users => {
+                users.sort((a, b) => (b.gems || 0) - (a.gems || 0));
+                users.slice(0, 20).forEach((user, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="rank rank-${index + 1}">${index + 1}</td>
+                        <td class="username">${user.username}</td>
+                        <td class="gems">${user.gems || 0}</td>
+                    `;
+                    leaderboardBody.appendChild(row);
+                });
+            })
+            .catch(error => console.error('Error fetching leaderboard data:', error));
+    </script>
+</body>
+</html>
